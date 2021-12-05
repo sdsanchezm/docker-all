@@ -78,5 +78,22 @@ sudo docker run -d --name db -v /home/ss/progs/PL-Docker/folderDocker1:/data/db 
 sudo docker exec -it db bash 
 ```
 
+- Delete a docker
+```
+docker rm myDocker
+```
 
+- Rename a docker
+```
+docker rename oldNAme newName 
+```
 
+- Delete all the non working containers 
+```
+docker myDocker prune
+```
+
+- To get  the main process (PID 1) of the docker, to kill the process after
+```
+sudo docker inspect --format '{{.State.Pid}}' ubuntu1 
+```
