@@ -18,6 +18,12 @@
     sudo docker run -d --name app -p 3000:3000 --env MONGO_URL=mongodb://db:27017/test platzyapp
     ```
 
+### list of dockers
+- 
+    ```yaml
+    docker container ls
+    ```
+
 ### Inspect an image
 - 
     ```
@@ -37,7 +43,7 @@
     docker rm hello-wolrd
     ```
 
-### remove all stopped containers
+### remove all stopped containers (prune)
 
 - it uses the name of the container or the id of the container
     ```yaml
@@ -139,6 +145,78 @@ s
     docker restart <container_name>
     ```
 
+## expose a container to a network
+
+- To create an `nginx` container that I can see from the port 8080 (in host local/machine), mapped to the 80 in the container:
+    ```yaml
+    docker run -d --name nginx3 -p 8080:80 nginx
+    ```
+    - here the logic is: <local_port>:<container_port>
+- Entering in local machine: `http://localhost:8080` will take me to nginx in local/host machine
+
+
+
+## Mongo db in docker (Bid Mounts)
+
+- `docker run -d --name db1 mongo`
+- `docker exec -it db1 bash`
+
+
+- if exit the container, data will be lost, so to bind folders/directories in docker:
+    - Linux:
+        ```yaml
+        docker run -d --name db4 -v /home/ss/progs/folderDocker1:/data/db mongo
+        ```
+    - Windows
+        ```yaml
+        docker run -d --name db4 -v /home/ss/progs/folderDocker1:/data/db mongo
+        ```
+    - Enter the terminal
+        ```yaml
+        docker exec -it db4 bash
+        ```
+        - in the mondodb database (its name is mongosh)
+            - `# mongosh`
+            - `# show dbs`
+            - `# use kkdb`
+            - `# db.users.insert({"name":"tiche"})`
+            - `# db.users.insert({"name":"amparo"})`
+            - `# db.users.insert({"name":"jara"})`
+            - `# db.users.find()`
+        
+
+## Volumes in docker
+
+- List all volumes
+    ```yaml
+    docker volume ls
+    ```
+- create a volume
+    ```yaml
+    docker volume create dbdata5
+    ```
+- create a container
+    ```yaml
+    docker run -d --name db5 --mount src=dbdata5,dst=/data/db mongo
+    ```
+    - enter to bash into the container
+        ```yaml
+        docker exec -it db5 bash
+        ```
+        - into the mongodb container
+            - `# mongosh`
+            - `# show dbs`
+            - `# use kkdb`
+            - `# db.users.insert({"name":"tiche"})`
+            - `# db.users.insert({"name":"amparo"})`
+            - `# db.users.insert({"name":"jara"})`
+            - `# db.users.find()`
+        - data will be persistent, the data is in a volume administered by docker and not in a file
+
+
+
+
+## misc 
 
 - Create a network connection
 ```
