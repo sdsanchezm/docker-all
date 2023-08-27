@@ -211,7 +211,113 @@ s
             - `# db.users.insert({"name":"amparo"})`
             - `# db.users.insert({"name":"jara"})`
             - `# db.users.find()`
-        - data will be persistent, the data is in a volume administered by docker and not in a file
+        - data will be persistent, the data is in a volume administered by docker and not in a file, so its not accessible from the host filesystem
+- inspect the container
+    ```yaml
+    docker inspect db5
+    ```
+
+## Files and containers
+
+- Create a container
+    ```yaml
+    docker run -d --name testingcopy1 ubuntu tail -f /dev/null
+    ```
+- enter to bash into the container
+    ```yaml
+    docker exec -it testingcopy1 bash
+    ```
+
+- copy a file INTO the container
+    ```yaml
+    docker cp b.txt testingcopy1:/test1/b.txt
+    ```
+    - or changing the name
+    ```yaml
+    docker cp b.txt testingcopy1:/test1/x.txt
+    ```
+
+- copy a folder into the container
+    ```yaml
+    docker cp .\test2x\ testingcopy1:/test2x
+    ```
+
+- copy a folder FROM the container (the container doesn't need to be running)
+    ```yaml
+    docker cp testingcopy1:/test1 test1x
+    ```
+    - or chaning the name of the folder
+    ```yaml
+    docker cp testingcopy1:/test1 destinationFolder1
+    ```
+
+
+## Images
+
+- review the actual images and their tags and so on
+    - `docker image ls`
+- tags is the version of the image (no tag, means latest)
+- tags make faster the image sharing
+- pull an image
+    - `docker pull ubuntu:20.04`
+
+## building and publishing images
+
+- Everything in the Dockerfile is executed in build time
+    ```yaml
+    FROM ubuntu:latest
+    RUN touch /usr/src/hello-here.txt
+    ```
+- Build an image (ubuntu is the base **image**, and hello is the **tag**)
+    - `docker build -t ubuntu:hello .`
+- create the container
+    - `docker ps -a`
+    ```
+    CONTAINER ID   IMAGE          COMMAND                  CREATED              STATUS                         PORTS       NAMES
+    d8373ceae116   ubuntu:hello   "/bin/bash"              About a minute ago   Exited (0) 40 seconds ago                  heuristic_blackburn
+    31ede0f835af   ubuntu         "tail -f /dev/null"      45 minutes ago       Up 45 minutes                              copy1
+    ```
+    - `docker image ls`
+    ```
+    REPOSITORY          TAG       IMAGE ID       CREATED         SIZE
+    ubuntu              hello     d9d6b2a5004d   7 minutes ago   77.8MB
+    ```
+    - a docker image is a set of **layers**, when building an images is 1 layer, some or all the other are layers are immutable (is like git, every push is a change of the code)
+
+    - run the container
+        - `docker run -it ubuntu:hello`
+
+    - docker login (log into docker hub)
+        - `docker login`
+
+    - change the tag (to get the container ready to publish the image to our repo)
+        - `docker tag ubuntu:hello sdsanchezm/ubuntu:hello`
+        - `docker image ls`
+            ```yaml
+            REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
+            ubuntu              hello     d9d6b2a5004d   25 minutes ago   77.8MB
+            sdsanchezm/ubuntu   hello     d9d6b2a5004d   25 minutes ago   77.8MB
+            ```
+
+    - docker push
+        - `docker push sdsanchezm/ubuntu:<image>`
+        - `docker push sdsanchezm/ubuntu:hello`
+
+    - to pull an image
+        - `docker pull sdsanchezm/ubuntu:hello`
+
+    - check credentials:
+        - `cat ~/.docker/config.json`
+
+
+
+
+
+
+$ docker run -it ubuntu:platzi (corro el contenedor con la nueva imagen)
+$ docker login (me logueo en docker hub)
+$ docker tag ubuntu:platzi miusuario/ubuntu:platzy (cambio el tag para poder subirla a mi docker hub)
+$ docker push miusuario/ubuntu:platzi (publico la imagen a mi docker hub)
 
 
 
