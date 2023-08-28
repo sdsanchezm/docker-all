@@ -349,6 +349,39 @@ s
             - `CMD ["npx", "nodemon", "--legacy-watch", "index.js"]`
 
 
+## Docker networks
+
+- show networks
+    - `docker network ls`
+
+    - `bridge` is a default bridge
+    - `host` is a representation or a real netwrok of a container
+    - `none` if a container does not need any network or connection
+
+- to create a network
+    - `docker network create --attachable nodenet1`
+    - validate
+        - `docker network ls`
+    - inspect
+        - `docker network inspect nodenet1`
+
+- create a container
+    - `docker run -d --name db10 mongo`
+
+- connect the new container to network created
+    - `docker network connect nodenet1 db10`
+
+- validate if the container was connected to the network (` "Containers": {`)
+    - `docker network inspect nodenet1`
+
+- Create the node app container (db10 can be used as name, because is in the same network)
+    - `docker run -d --name app10 -p 3000:3000 --env MONGO_URL=mongodb://db10:27017/test nodeapp5`
+
+- Connect the new container to the network (`docker network connect <network> <container>`)
+    - `docker network connect nodenet1 app10`
+
+- Inspect and validate that 2 containers are connected to the same network:
+    - `docker network inspect nodenet1`
 
 
 

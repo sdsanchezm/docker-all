@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     if (err) {
       res.status(500).send('qqq Error connecting to the DB! ' + err);
     } else {
-      res.send('Successfully connected to the DB! ');
+      res.send('yay! Successfully connected to the DB! ');
       db.close();
     }
   });
