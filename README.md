@@ -25,7 +25,7 @@
     ```
 
 ### Inspect an image
-- 
+- could be an image or a container
     ```
     sudo docker inspect <image>
     ```
@@ -256,7 +256,7 @@ s
 
 - review the actual images and their tags and so on
     - `docker image ls`
-- tags is the version of the image (no tag, means latest)
+- tags is the version of the image (no tag, means latest) (tags are managed by `-t`)
 - tags make faster the image sharing
 - pull an image
     - `docker pull ubuntu:20.04`
@@ -312,86 +312,89 @@ s
     - check credentials:
         - `cat ~/.docker/config.json`
 
+## Layers of an image
+
+- view layers (each layer is like a change made)
+    - `docker history ubuntu`
+
+- Another tool is dive
+    - dive https://github.com/wagoodman/dive
+    - view layers are useful to optimize 
+        - example: if an installation is required, and then no longer needed and removed, then in only 1 line (layer) can be performed
+
+
+## building an environment for a nodejs app
+
+- create/build a regular **image**, based on a Docker File, like the one in the section [template-of-a-dockerfile](#template-of-a-dockerfile)
+    - `docker build -t nodeapp1 .`
+    - `-t` is for Tag
+
+- create the container and when is stopped it's deleted (using the --rm), is created in port 3000
+    - `docker run --rm -p 3000:3000 platziapp`
+
+- when running the app
+- docker knows automatically that if an image was created and no changes were made, then it will be automatic/fast (IF is the same image, because of cache, is the docker cache)
+    - this is one of the biggest advantages of docker, it allows to be used in development because it does not need to rebuild the entire thing, just changes depending on the structure of the Dockerfile (and their layers)
+- to work with node container, we can use nodemon to reload automatically, linking with bind mounts in docker to achieve a live usable dev container
+
+    - Rebuild the image, one more time
+        - `docker build -t nodeapp1 .`
+
+    - then create the container one more time
+        - `docker run --rm -p 3000:3000 -v C:\progs\AA_PROJECTS_ALL\docker-all\nodeAppInDocker:/usr/src nodeapp1`
+
+        - in Windows, might need to dockerfile like this (last line):
+            - `CMD ["npx", "nodemon", "-L", "index.js"]`
+            - or this
+            - `CMD ["npx", "nodemon", "--legacy-watch", "index.js"]`
 
 
 
-## misc 
-
-- Create a network connection
-```
-sudo docker network connect platzynet db
-```
-
-- Create a docker, based on the image platzyapp, using the name app, seting the variable MONGO_URL, routing the ports 3000 to 3000. 
-```
-sudo docker run -d --name app -p 3000:3000 --env MONGO_URL=mongodb://db:27017/test platzyapp
-```
-
-- Template of a Dockerfile
-```
-FROM node:14
-
-COPY ["package.json", "package-lock.json", "/usr/src/"]
-
-WORKDIR /usr/src
-
-RUN npm install
-
-COPY [".", "/usr/src/"]
-
-EXPOSE 3000
-
-CMD ["npx", "nodemon", "index.js"]
-```
-
-- Check the list of images
-```
-docker image ls 
-```
-
-- Check the list of running dockers:
-```
-docker ps -a
-```
-
-- Check the configuration of a docker
-```
-sudo docker inspect db
-```
-
-- Create a Volume
-```
-sudo docker volume create dbdata
-```
-
-- Run the Docker using the volume created
-```
-sudo docker run -d --name db --mount src=dbdata,dst=/data/db mongo
-```
-
-- Create a bind mount
-```
-sudo docker run -d --name db -v /home/ss/progs/PL-Docker/folderDocker1:/data/db mongo
-```
-
-- Enter into a docker and execute bash
-```
-sudo docker exec -it db bash 
-```
-
-- Delete a docker
-```
-docker rm myDocker
-```
 
 
+# MISC
 
-- Delete all the non working containers 
-```
-docker myDocker prune
-```
+### Create a network connection
+- 
+    ```
+    sudo docker network connect platzynet db
+    ```
 
-- To get  the main process (PID 1) of the docker, to kill the process after
-```
-sudo docker inspect --format '{{.State.Pid}}' ubuntu1 
-```
+### Create a docker, based on the image platzyapp, using the name app, seting the variable MONGO_URL, routing the ports 3000 to 3000. 
+- 
+    ```yaml
+    sudo docker run -d --name app -p 3000:3000 --env MONGO_URL=mongodb://db:27017/test platzyapp
+    ```
+
+### Template of a Dockerfile (Examples)
+- 
+    ```yaml
+        FROM node:14
+
+        COPY ["package.json", "package-lock.json", "/usr/src/"]
+
+        WORKDIR /usr/src
+
+        RUN npm install
+
+        COPY [".", "/usr/src/"]
+
+        EXPOSE 3000
+
+        CMD ["npx", "nodemon", "index.js"]
+    ```
+
+- 
+    ```yaml
+        FROM node:current
+        WORKDIR /usr/app/server
+        COPY ["package.json", "package-lock.json", "."]
+        RUN npm install
+        COPY[".", "."]
+        RUN npm run build
+        COPY [".env", "./build"]
+        EXPOSE 3500
+        CMD node src/index.js
+    ```
+
+
