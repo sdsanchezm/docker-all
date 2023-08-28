@@ -261,8 +261,11 @@ s
 - pull an image
     - `docker pull ubuntu:20.04`
 
-## building and publishing images
+## building and publishing docker images
 
+- check docker images
+    - `docker image ls`
+    
 - Everything in the Dockerfile is executed in build time
     ```yaml
     FROM ubuntu:latest
@@ -308,16 +311,6 @@ s
 
     - check credentials:
         - `cat ~/.docker/config.json`
-
-
-
-
-
-
-$ docker run -it ubuntu:platzi (corro el contenedor con la nueva imagen)
-$ docker login (me logueo en docker hub)
-$ docker tag ubuntu:platzi miusuario/ubuntu:platzy (cambio el tag para poder subirla a mi docker hub)
-$ docker push miusuario/ubuntu:platzi (publico la imagen a mi docker hub)
 
 
 
