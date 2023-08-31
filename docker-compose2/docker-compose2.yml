@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  app2:
+    container_name: node3
+    build: 
+      context: .
+      dockerfile: Dockerfile.app2 
+    environment:
+      MONGO_URL: "mongodb://mongo2:27017/test"
+    # image: nodeapp1
+    depends_on:
+      - mongo2 ## this is the service name
+    # restart: always
+    ports:
+      - 3002:3002
+      # - 8000:8000
+    volumes:
+      - ./appfolder:/opt/app
+      # - /opt/app/node_modules
+    # command: npx nodemon -L index.js
+      # - /usr/bin/touch /opt/z.txt
+    networks:
+      - internalnetwork2
+
+  mongo2:
+    container_name: mongo3
+    # image: mongo
+    build:
+      context: .
+      dockerfile: Dockerfile.db2
+    ports:
+      - 27017:27017
+    volumes:
+      - /home/kraus/progs/docker-all/docker-compose2/mongodata:/data/db
+    networks:
+      - internalnetwork2
+
+networks:
+  internalnetwork2:
+    driver: bridge
