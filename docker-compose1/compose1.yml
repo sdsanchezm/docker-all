@@ -1,0 +1,33 @@
+# version: "3.8"
+services:
+  app1:
+    container_name: node2
+    environment:
+      MONGO_URL: "mongodb://mongo1:27017/test" # mongo1 is the service, not the name of the container
+    build: . # this build keyword is used to build an image from a dockerfile, instead of an existing image
+    # image: nodeapp1
+    depends_on:
+      - mongo1
+    restart: always
+    ports:
+      - 3000:3000
+      - 8000:8000
+    volumes:
+      - /home/kraus/progs/docker-all/docker-compose1:/opt/app
+    networks:
+      - internalnetwork1
+
+  mongo1:
+    container_name: mongo2
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - /home/kraus/progs/docker-all/docker-compose1/mongodata:/opt/db2
+    networks:
+      - internalnetwork1
+
+networks:
+  internalnetwork1:
+    driver: bridge

@@ -252,7 +252,7 @@ s
     ```
 
 
-## Images
+## docker Images
 
 - review the actual images and their tags and so on
     - `docker image ls`
@@ -260,6 +260,8 @@ s
 - tags make faster the image sharing
 - pull an image
     - `docker pull ubuntu:20.04`
+- remove an image
+    - `docker image rm <name>`
 
 ## building and publishing docker images
 
@@ -271,6 +273,16 @@ s
     FROM ubuntu:latest
     RUN touch /usr/src/hello-here.txt
     ```
+- Building an image from a file
+    - `docker build -t db2 -f Dockerfile.db2 .`
+    - Example **Dockerfile.db2**:
+        ```
+        FROM mongo
+        RUN touch /opt/a.txt
+        ```
+        - create a container:
+            - `docker run -d --name <imageName> -p <port host>:<port in container> <imageName>`
+            - `docker run -d --name test1 -p 3000:3000 apptest1`
 - Build an image (ubuntu is the base **image**, and hello is the **tag**)
     - `docker build -t ubuntu:hello .`
 - create the container
@@ -387,23 +399,81 @@ s
 
 ## Docker compose
 
+- Docker compose work with services and not with containers
 
 - `docker-compose -f docker-compose.test.yml up`
+- `docker compose -f dcompose0.yml up` // Specifies a file
+- `docker compose up` // uses the standard Dockerfile
+- `docker compose up -d` // keep it running it in detach 
+- `docker compose down` // stops and remove
+- `docker compose build` //build
+- `docker compose stop` // stops do not remove
+
+- Example 1:
+    - Create the mongo image
+        - `docker run -d --name db1 mongo`
+    - create the nodeapp1 image
+        - `docker build -t nodeapp1 .`
+        - Dokerfile in this case: **./docker-compose1/Dockerfile**
+    - use the yml file
+        - `docker compose -f dcompose0.yml up`
+
+- Example 2:
+    - use the yml file
+        - `docker compose -f compose1.yml up`
+        - `docker compose -f compose1.yml down`
+
+### docker compose commands
+
+- `docker compose up` // uses the standard Dockerfile
+- `docker compose up -d` // keep it running it in detach 
+- `docker compose down` // stops and remove
+- `docker compose build` //build
+- `docker compose stop` // stops do not remove
+- `docker compose exec app1 bash` // app1 is the name of the service
+- `docker compose ps` // check services
+- `docker compose logs -f app1` // follow up logs
+- `docker compose logs app1` // logs only from app1
+- `docker compose logs` // all logs
+- `docker network inspect docker_default` // check networks
+
+
+
+
 
 
 
 ## Docker Fedora (with local images)
 
-- in folder: `./fedoraDockerImages/README.md`
+- Folder in this repo: `./fedoraDockerImages/README.md`
 
 
 # MISC
 
-### Create a network connection
-- 
-    ```
-    sudo docker network connect platzynet db
-    ```
+### Quick recap
+- Building an image from a file
+    - `docker build -t imageapp2 -f Dockerfile.app2 .`
+    - Example **Dockerfile.app2**:
+        ```
+        FROM node
+        RUN mkdir -p /opt/app
+        WORKDIR /opt/app
+        COPY ./appfolder/package.json .
+        RUN npm install --quiet
+        COPY ./appfolder/. .
+        RUN npm install nodemon -g --quiet
+        EXPOSE 8000
+        CMD npx nodemon index.js
+        ```
+- create a container from the previous image named imageapp2, and container name: test2:
+    - `docker run -d --name <imageName> -p <port host>:<port in container> <imageName>`
+    - `docker run -d --name test2 -p 3000:3000 imageapp2`
+    - If the image is turned off:
+        - `docker start test2`
+    - then log into it
+        - `docker exec -it test2 bash`
+    - `docker start -ai <container_name>`
+    
 
 ### Create a docker, based on the image platzyapp, using the name app, seting the variable MONGO_URL, routing the ports 3000 to 3000. 
 - 
@@ -415,6 +485,10 @@ s
 
 - `docker pull fedora/nodejs`
 - [https://hub.docker.com/r/fedora/nodejs]
+
+### Docker compose references
+
+- [https://docs.docker.com/compose/compose-file/build/]
 
 
 ### Template of a Dockerfile (Examples)
@@ -447,5 +521,27 @@ s
         EXPOSE 3500
         CMD node src/index.js
     ```
+
+
+### Dockerfile instructions
+
+
+|Dockerfile Instruction |	Description |
+| ---- | ---- |
+| FROM	| specify base image to start from |
+| RUN	| to run commands during the image build process |
+| ENV	| Sets environment variables within the image. If only need to define build-time variables then utilize ARG instruction |
+| COPY	| to copy a file or folder from the host system into the docker image |
+| EXPOSE | to specify the port in the docker image to listen to at runtime |
+| ADD | advanced form of COPY instruction, CSan copy files from the host system into the docker image. also can use it to copy files from a URL into a destination in the docker image a tarball from the host system and automatically have it extracted into a destination in the docker image |
+| WORKDIR	| used to set the current working directory |
+| VOLUME | It is used to create or mount the volume to the Docker container |
+| USER | Sets the user name and UID when running the container. Can use this instruction to set a non-root user of the container |
+| LABEL	| Specify metadata information of Docker image |
+| ARG	| Defines build-time variables using key-value pairs. However, these ARG variables will not be accessible when the container is running. To maintain a variable within a running container use ENV instruction instead. |
+| CMD	| Executes a command in a running container. Only one CMD instruction is allowed. If multiple are present, only the last one takes effect |
+| ENTRYPOINT	| Specifies the commands that will execute when the Docker container starts. If don’t specify any ENTRYPOINT, it defaults to “/bin/sh -c”. |
+
+
 
 

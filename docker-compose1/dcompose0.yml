@@ -1,0 +1,12 @@
+services:
+  app:
+    image: nodeapp1
+    environment:
+      MONGO_URL: "mongodb://db2:27017/test"
+    depends_on:
+      - db2
+    ports:
+      - "3000:3000"
+
+  db2:
+    image: mongo
