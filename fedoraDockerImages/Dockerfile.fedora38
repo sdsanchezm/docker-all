@@ -1,0 +1,5 @@
+FROM scratch
+LABEL tester="tester <davs@live.no>"
+ENV DISTTAG=f38container FGC=f38 FBR=f38
+ADD Fedora-Cloud-Base-38-1.6.x86_64.raw.xz / 
+CMD ["/bin/bash"]

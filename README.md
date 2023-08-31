@@ -266,8 +266,8 @@ s
 - check docker images
     - `docker image ls`
     
-- Everything in the Dockerfile is executed in build time
-    ```yaml
+- Everything in the Dockerfile is executed in build time (to create an image, a Dockerfile must be created)
+    ```
     FROM ubuntu:latest
     RUN touch /usr/src/hello-here.txt
     ```
@@ -385,6 +385,18 @@ s
 
 
 
+## Docker compose
+
+
+- `docker-compose -f docker-compose.test.yml up`
+
+
+
+## Docker Fedora (with local images)
+
+- in folder: `./fedoraDockerImages/README.md`
+
+
 # MISC
 
 ### Create a network connection
@@ -398,6 +410,12 @@ s
     ```yaml
     sudo docker run -d --name app -p 3000:3000 --env MONGO_URL=mongodb://db:27017/test platzyapp
     ```
+
+### Fedora dockerhub nodejs tags
+
+- `docker pull fedora/nodejs`
+- [https://hub.docker.com/r/fedora/nodejs]
+
 
 ### Template of a Dockerfile (Examples)
 - 
