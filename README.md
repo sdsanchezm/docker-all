@@ -571,6 +571,35 @@ s
 
 
 
+## Build context
+
+- The .dockerignore file, omits files when building an image, for example from a dockerfile
+    - Example: below command, will ignore files that are in the .dockerignore
+        - `docker build -t test .`
+- .dockerignore
+    ```
+    *.log
+    .dockerignore
+    .git
+    .gitignore
+    build/*
+    Dockerfile
+    node_modules
+    npm-debug.log*
+    README.md
+    ```
+- the dot at the end of the command, indicates the actual context
+
+- Docker file production example: "./Dockerfile.production"
+
+
+## Docker in Docker (docke-in-docker)
+
+- `docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock docker:19.03.12`
+- `docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(wich docker):/bin/docker wagoodman/dive:latest prodapp`
+
+
+
 # MISC
 
 ### Quick recap
