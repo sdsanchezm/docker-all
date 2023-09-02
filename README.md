@@ -256,12 +256,16 @@ s
 
 - review the actual images and their tags and so on
     - `docker image ls`
+    - `docker images`
 - tags is the version of the image (no tag, means latest) (tags are managed by `-t`)
 - tags make faster the image sharing
 - pull an image
     - `docker pull ubuntu:20.04`
 - remove an image
     - `docker image rm <name>`
+
+- force to remove an image
+    - `docker image rm -f <name>`
 
 ## building and publishing docker images
 
@@ -439,7 +443,92 @@ s
 
 
 
+### docker compose overide
 
+- docker override, is a way to increase the abstraction level
+    - typically, the file is called `docker-compose.override.yml` with the `.override.yml` ending
+    - the name of the services, must be the same, (in both files) the regular docker-compose.yml file and in the **docker-compose.override.yml** file
+- the override file is higher in the hierarchy, so it has precedence over the others
+- multiple files, could be run like this:
+    ```
+    docker-compose \
+	-f docker-compose.ym \
+	-f docker-compose.override.yml \
+	up
+    ```
+
+### Multiple horizontal instances of the same service
+
+- `docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --scale nodejs-app=2` // nodejs-app is the name of the service
+- `docker compose up -d --scale app=2` // app is the name of the service
+- the range of the ports, should be ranged, like this: 
+    - 
+    ```
+    ports:
+        - "3000-3001:3000"
+    ```
+
+
+## Multiple removal and cleaning
+
+- `docker rm -f $(docker ps -ap)`
+- `docker container prune`
+- to remove everything except images
+    - `docker system prune`
+
+
+## docker stats
+
+- to see the amount of memory
+    - `docker stats`
+
+## Memory limit in docker
+
+- set the limit of memory: `--memory 1g`
+    - `docker run --name app --memory 1g fedora1`
+    - `docker run -d --name f2 --memory 1g fedora1 tail -f /dev/null`
+
+
+## SHELL and EXEC (and stopping containers)
+
+- SHELL
+    ```
+    FROM ubuntu:trusty
+    COPY ["loop.sh", "/"]
+    CMD /loop.sh
+    ```
+- EXEC
+    ```
+    FROM ubuntu:trusty
+    COPY ["loop.sh", "/"]
+    CMD ["/loop.sh"]
+    ```
+- **exec** is the recommended way, because it allows to stop the container and not take the container into an infinite loop stage
+- using the shell mode, the container will not stop, because the CMD is shell and is not EXEC. EXEC is recommended.
+- send a kill signal
+    - `docker kill looper`
+- show processes of the container:
+    - `docker exec looper ps -ef`
+- loop.sh file:
+    ```
+    #!/usr/bin/env bash
+    trap 'exit 0' SIGTERM
+    while true; do :; done
+    ```
+
+## Autocontent binaries in docker
+
+- build the image
+    - `docker build -t pingimage1 -f Dockerfile.binaries .`
+    - Dockerfile.binaries:
+        ```
+        FROM ubuntu:trusty
+        ENTRYPOINT [ "/bin/ping", "-c", "3"]
+        CMD ["localhost"]
+        ```
+- create the container, pinging to a host:
+    - `docker run --name pingapp2 pingimage1 google.com`
+- this allows to send a parameter (google.com in this case) to a container
 
 
 
@@ -489,6 +578,8 @@ s
 ### Docker compose references
 
 - [https://docs.docker.com/compose/compose-file/build/]
+- [https://devhints.io/docker-compose]
+- 
 
 
 ### Template of a Dockerfile (Examples)
