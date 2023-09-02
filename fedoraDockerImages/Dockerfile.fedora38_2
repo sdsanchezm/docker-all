@@ -1,0 +1,11 @@
+FROM f38x
+LABEL tester="tester <davs@live.no>"
+ENV DISTTAG=f38container FGC=f38 FBR=f38
+# ADD Fedora-Cloud-Base-38-1.6.x86_64.raw.xz / 
+# ADD fedora-coreos-38.20230806.3.0-x86_64.raw /
+RUN dnf install iputils -y
+# CMD ["/bin/ping","-c","3","localhost"]
+# CMD [ "dnf", "install", "iputils", "-y" ]
+ENTRYPOINT [ "/bin/ping", "-c", "3"]
+CMD ["localhost"]
+# CMD [ "ping", "-c", "3", "localhost" ]
