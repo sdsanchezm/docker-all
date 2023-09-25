@@ -1,0 +1,10 @@
+services:
+  nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8081
+    volumes:
+    - .:/opt/app
+    - ./node_modules:/opt/app/node_modules
