@@ -676,6 +676,29 @@ s
         CMD node src/index.js
     ```
 
+### dotnet 7 template
+
+- [https://hub.docker.com/_/microsoft-dotnet-sdk]
+- Example: [https://github.com/dotnet/dotnet-docker/blob/main/samples/dotnetapp/README.md]
+- MS Documentation [https://learn.microsoft.com/en-us/dotnet/core/docker/build-container?tabs=linux&pivots=dotnet-7-0]
+- `docker pull mcr.microsoft.com/dotnet/sdk:7.0`
+    ```yaml
+        FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+        WORKDIR /src
+        COPY myApp.csproj .
+        RUN dotnet restore
+        COPY . .
+
+        RUN dotnet build "myApp.csproj" -c Release -o /app/build
+
+        RUN dotnet publish -c release -o /app
+
+        FROM mcr.microsoft.com/dotnet/aspnet:7.0
+        WORKDIR /app
+        COPY --from=build /app .
+        ENTRYPOINT ["dotnet", "myApp.dll"]
+    ```
+
 
 ### Dockerfile instructions
 
