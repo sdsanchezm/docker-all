@@ -698,6 +698,11 @@ s
         COPY --from=build /app .
         ENTRYPOINT ["dotnet", "myApp.dll"]
     ```
+- commans for local deploy:
+    - `docker pull mcr.microsoft.com/dotnet/sdk:7.0`
+    - `dotnet new webapi -n myApp --no-https`
+    - `sudo docker build . -f Dockerfile.net7 -t dotnet7example1`
+    - `sudo docker run -it --rm -p 3000:80 --name myApp dotnet7example1`
 
 
 ### Dockerfile instructions
